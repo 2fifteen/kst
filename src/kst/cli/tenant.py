@@ -88,7 +88,7 @@ def add_tenant(
     try:
         tenant = tenant_manager.add_tenant(name, tenant_url, api_token, str(repo_path))
         console.print_success(f"Added tenant '{name}' with repository at {tenant.repo_path}")
-        console.print(f"Use 'kst tenant switch {name}' to activate this tenant")
+        console.print(f"Use 'kst tenant switch {name}' to activate this tenant and change to its directory")
     except ValueError as e:
         console.error(str(e))
         raise typer.Exit(code=1)
@@ -127,25 +127,25 @@ def list_tenants():
 @app.command(name="switch", epilog=epilog_text)
 def switch_tenant(
     name: Annotated[str, typer.Argument(help="Name of the tenant to switch to")],
-    change_dir: Annotated[
+    no_change_dir: Annotated[
         bool,
         typer.Option(
-            "--change-dir", 
-            "-d", 
-            help="Change to the tenant's repository directory"
+            "--no-change-dir",
+            "-n",
+            help="Do not change to the tenant's repository directory"
         )
     ] = False,
 ):
     """Switch to a different Kandji tenant"""
-    
+
     tenant_manager = get_tenant_manager()
-    
+
     try:
         tenant = tenant_manager.switch_tenant(name)
         console.print_success(f"Switched to tenant '{tenant.name}'")
-        
-        # Change directory if requested
-        if change_dir:
+
+        # Change directory by default unless --no-change-dir is specified
+        if not no_change_dir:
             change_directory(tenant.repo_path)
             console.print(f"Changed directory to {tenant.repo_path}")
     except ValueError as e:

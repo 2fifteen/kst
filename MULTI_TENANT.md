@@ -47,12 +47,12 @@ To switch to a different tenant:
 kst tenant switch my-tenant
 ```
 
-This sets the tenant as active, making its credentials automatically available for all kst commands.
+This sets the tenant as active, making its credentials automatically available for all kst commands, and automatically changes to the tenant's repository directory.
 
-To also change to the tenant's repository directory:
+If you don't want to change directories when switching tenants:
 
 ```bash
-kst tenant switch my-tenant --change-dir
+kst tenant switch my-tenant --no-change-dir
 ```
 
 ### Working with the Active Tenant
@@ -98,9 +98,9 @@ kst tenant remove my-tenant --delete-repo
 ```
 tenant add NAME [OPTIONS]      # Add a new Kandji tenant
 tenant list                    # List all configured Kandji tenants
-tenant switch NAME [OPTIONS]   # Switch to a different Kandji tenant
+tenant switch NAME [OPTIONS]   # Switch to a different Kandji tenant and change to its directory
 tenant current                 # Show the current active Kandji tenant
-tenant update NAME [OPTIONS]   # Update a Kandji tenant configuration
+tenant update NAME [OPTIONS]   # Update a Kandji tenant configuration (e.g., --api-token)
 tenant remove NAME [OPTIONS]   # Remove a Kandji tenant configuration
 ```
 

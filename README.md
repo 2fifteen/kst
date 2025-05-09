@@ -42,7 +42,7 @@ kst tenant add client1 --tenant-url https://client1.api.kandji.io --api-token "t
 # List all tenants
 kst tenant list
 
-# Switch between tenants
+# Switch between tenants (automatically changes to tenant's directory)
 kst tenant switch client1
 
 # Use active tenant's credentials automatically
@@ -57,7 +57,7 @@ kst --auto-cd profile list
 ```
 tenant add NAME [OPTIONS]      # Add a new Kandji tenant
 tenant list                    # List all configured Kandji tenants
-tenant switch NAME [OPTIONS]   # Switch to a different Kandji tenant
+tenant switch NAME [OPTIONS]   # Switch to a different Kandji tenant and change to its directory
 tenant current                 # Show the current active Kandji tenant
 tenant update NAME [OPTIONS]   # Update a Kandji tenant configuration
 tenant remove NAME [OPTIONS]   # Remove a Kandji tenant configuration

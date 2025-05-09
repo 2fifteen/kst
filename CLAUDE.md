@@ -54,6 +54,25 @@ uv run poe test
 uv run pytest tests/path/to/test_file.py -v
 ```
 
+### Tenant Management
+
+```
+# Add a new tenant
+kst tenant add NAME --tenant-url URL --api-token TOKEN [--create-repo]
+
+# List configured tenants
+kst tenant list
+
+# Switch active tenant (automatically changes to tenant's directory)
+kst tenant switch NAME [--no-change-dir]
+
+# Update a tenant's API token
+kst tenant update NAME --api-token NEW_TOKEN
+
+# View current tenant
+kst tenant current
+```
+
 ## Project Structure
 
 - `src/kst/`: Main package code
@@ -100,8 +119,8 @@ kst tenant add NAME --tenant-url URL --api-token TOKEN [--create-repo]
 # List configured tenants
 kst tenant list
 
-# Switch active tenant
-kst tenant switch NAME [--change-dir]
+# Switch active tenant (automatically changes to tenant's directory)
+kst tenant switch NAME [--no-change-dir]
 
 # View current tenant
 kst tenant current
@@ -114,4 +133,5 @@ The multi-tenant functionality allows working with multiple Kandji tenants by:
 1. Storing tenant configurations in `~/.config/kst/tenants.json`
 2. Maintaining separate repositories for each tenant
 3. Automatically using the active tenant's credentials
-4. Supporting directory switching based on the active tenant
+4. Automatically changing to the active tenant's repository directory when switching tenants
+5. Supporting tenant operations like updating API tokens when they expire
