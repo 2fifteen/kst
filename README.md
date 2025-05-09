@@ -1,9 +1,76 @@
-# 2Fifteen Fork
+# 2Fifteen Kandji Sync Toolkit (KST) - Multi-Tenant Fork
 
-This is Kandji's Sync Toolkit, but we will be working on adding some logic to handle multi-tenancy better for our specific use-case.
+This is a fork of Kandji's Sync Toolkit with added multi-tenant support for managing multiple Kandji instances.
 
+## Multi-Tenant Features
 
-# Kandji Sync Toolkit
+This fork extends the standard KST tool with the following capabilities:
+
+- **Manage multiple Kandji tenants**: Add, update, remove, and switch between different Kandji tenant configurations
+- **Separate repositories per tenant**: Maintain distinct repositories for each tenant's resources
+- **Automatic credential selection**: Use the active tenant's API credentials for all commands
+- **Directory switching**: Automatically change to the correct tenant's repository directory
+
+## Multi-Tenant Installation
+
+The multi-tenant version can be installed from this repository:
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/kst.git
+cd kst
+
+# Create a virtual environment and install
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .
+
+# Create an alias for easier use
+echo 'alias kst="source /path/to/kst/venv/bin/activate && /path/to/kst/venv/bin/kst"' >> ~/.zshrc
+# Then restart your shell or source it:
+source ~/.zshrc
+```
+
+## Multi-Tenant Usage
+
+For detailed usage instructions, see the [MULTI_TENANT.md](MULTI_TENANT.md) file.
+
+```bash
+# Add a new tenant
+kst tenant add client1 --tenant-url https://client1.api.kandji.io --api-token "token" --create-repo
+
+# List all tenants
+kst tenant list
+
+# Switch between tenants
+kst tenant switch client1
+
+# Use active tenant's credentials automatically
+kst profile pull --all
+
+# Automatically change directory to tenant's repository
+kst --auto-cd profile list
+```
+
+## Multi-Tenant Command Reference
+
+```
+tenant add NAME [OPTIONS]      # Add a new Kandji tenant
+tenant list                    # List all configured Kandji tenants
+tenant switch NAME [OPTIONS]   # Switch to a different Kandji tenant
+tenant current                 # Show the current active Kandji tenant
+tenant update NAME [OPTIONS]   # Update a Kandji tenant configuration
+tenant remove NAME [OPTIONS]   # Remove a Kandji tenant configuration
+```
+
+Global options:
+```
+--auto-cd   # Automatically change to the active tenant's repository directory
+```
+
+---
+
+# Original Kandji Sync Toolkit Documentation
 
 `kst` (*pronounced kast*) is a utility for managing resources via the Kandji API.
 
@@ -41,6 +108,7 @@ This is Kandji's Sync Toolkit, but we will be working on adding some logic to ha
 - List or show details of local and remote resources directly from the command line
 - Format output as structured YAML, plist, or JSON for use with other tools
 - Build your own integration for managing custom profiles or scripts with a fully featured Python client module
+- **NEW:** Manage multiple Kandji tenants easily and efficiently (see [Multi-Tenant Features](#multi-tenant-features))
 
 ## Installation
 
@@ -96,6 +164,9 @@ Follow the steps below to quickly get up and running with a local copy of your K
 > [!Note]
 > Replace `<YOUR_API_URL_HERE>` and `<YOUR_API_TOKEN_HERE>` with your API URL and token. See the authentication section
 > [below](#authenticate-with-your-kandji-tenant) for more details.
+>
+> **With multi-tenant support**: Instead of setting environment variables, you can add a tenant with `kst tenant add` and 
+> switch to it with `kst tenant switch`. See [Multi-Tenant Features](#multi-tenant-features).
 
 ## Getting Help
 
@@ -122,6 +193,7 @@ Usage: kst [OPTIONS] COMMAND [ARGS]...
 │ profile   Interact with Kandji Custom Profiles                                                                       │
 │ script    Interact with Kandji Custom Scripts                                                                        │
 │ new       Create a new kst repository                                                                                │
+│ tenant    Manage multiple Kandji tenants                                                                             │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -164,6 +236,12 @@ the user.
 > ```sh
 > export KST_TENANT="https://mysubdomain.api.kandji.io"
 > export KST_TOKEN="not-a-real-token"
+> ```
+>
+> **With multi-tenant support**: Instead of setting environment variables, you can use the tenant manager to store credentials:
+> ```sh
+> kst tenant add my-tenant --tenant-url https://mysubdomain.api.kandji.io --api-token "your-token"
+> kst tenant switch my-tenant
 > ```
 
 ## Populating Your Local Repository
@@ -511,9 +589,9 @@ Each profile requires:
 
 ```
 $ lsd --tree profiles/MyFancyProfile
- MyFancyProfile
-├──  info.yaml
-└──  profile.mobileconfig
+ MyFancyProfile
+├──  info.yaml
+└──  profile.mobileconfig
 ```
 
 `info.yaml`
@@ -563,10 +641,10 @@ Each script requires:
 
 ```
 $ lsd --tree scripts/MyFancyScript
- MyFancyScript
-├──  audit.zsh
-├──  info.plist
-└──  remediation.zsh
+ MyFancyScript
+├──  audit.zsh
+├──  info.plist
+└──  remediation.zsh
 ```
 
 `info.json`

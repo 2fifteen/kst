@@ -1,5 +1,7 @@
+import os
 import re
 import unicodedata
+from pathlib import Path
 
 from ruamel.yaml import YAML
 
@@ -31,3 +33,20 @@ def sanitize_filename(value: str) -> str:
         return replacement
 
     return value[:max_length]
+
+
+def change_directory(path: str | Path) -> None:
+    """Change the current working directory.
+
+    Args:
+        path: The path to change to
+
+    Raises:
+        ValueError: If the path does not exist
+    """
+    path_obj = Path(path).expanduser().resolve()
+
+    if not path_obj.exists():
+        raise ValueError(f"Path {path_obj} does not exist")
+
+    os.chdir(path_obj)

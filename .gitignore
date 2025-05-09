@@ -106,3 +106,5 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+**/.claude/settings.local.json

@@ -12,6 +12,7 @@ from kst.console import OutputConsole, epilog_text
 from .new import app as new_app
 from .profile import app as profile_app
 from .script import app as script_app
+from .tenant import app as tenant_app
 
 __all__ = ["app"]
 
@@ -30,6 +31,13 @@ app.add_typer(
     script_app,
     name="script",
     help="Interact with Kandji Custom Scripts",
+    epilog=epilog_text,
+    no_args_is_help=True,
+)
+app.add_typer(
+    tenant_app,
+    name="tenant",
+    help="Manage multiple Kandji tenants",
     epilog=epilog_text,
     no_args_is_help=True,
 )
@@ -73,11 +81,22 @@ DebugFlag = Annotated[
 ]
 
 
+AutoCdFlag = Annotated[
+    bool,
+    typer.Option(
+        "--auto-cd",
+        help="Automatically change to the active tenant's directory.",
+        rich_help_panel="Multi-Tenant",
+    ),
+]
+
+
 @app.callback(no_args_is_help=True, epilog=epilog_text)
 def main(
     log: LogPathOption = str(platformdirs.user_log_path(appname=APP_NAME) / f"{APP_NAME}.log"),
     debug: DebugFlag = False,
     version: VersionFlag = False,  # noqa: ARG001
+    auto_cd: AutoCdFlag = False,
 ) -> None:
     """Kandji Sync Toolkit, a utility for local management of Kandji resources."""
 
@@ -96,6 +115,27 @@ def main(
         handlers=handlers,
     )
     console.info("--- Starting Kandji Sync Toolkit ---")
+
+    # Handle auto-cd to active tenant's repository if requested
+    if auto_cd:
+        try:
+            from kst.tenant_manager import get_tenant_manager
+            from kst.utils import change_directory
+
+            tenant_manager = get_tenant_manager()
+            active_tenant = tenant_manager.get_active_tenant()
+
+            if active_tenant:
+                try:
+                    change_directory(active_tenant.repo_path)
+                    console.info(f"Changed directory to active tenant '{active_tenant.name}' repo: {active_tenant.repo_path}")
+                except ValueError as e:
+                    console.error(f"Failed to change directory: {e}")
+            else:
+                console.info("No active tenant configured, staying in current directory")
+        except (ImportError, Exception) as e:
+            console.debug(f"Error during auto-cd: {e}")
+            pass  # Don't fail app startup if auto-cd fails
 
 
 __all__ = ["app"]

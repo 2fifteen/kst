@@ -61,6 +61,21 @@ def api_config_prompt(tenant_url: str | None, api_token: str | None, interactive
         typer.BadParameter: If the function cannot return a valid ApiConfig object.
 
     """
+    # Try to get credentials from tenant manager if not explicitly provided
+    if tenant_url is None or api_token is None:
+        try:
+            from kst.tenant_manager import get_tenant_manager
+            tenant_manager = get_tenant_manager()
+            active_tenant = tenant_manager.get_active_tenant()
+
+            if active_tenant:
+                console.debug(f"Using credentials from active tenant '{active_tenant.name}'")
+                if tenant_url is None:
+                    tenant_url = active_tenant.tenant_url
+                if api_token is None:
+                    api_token = active_tenant.api_token
+        except ImportError:
+            console.debug("Tenant manager not available")
 
     if interactive and tenant_url is None:
         console.debug("Tenant URL not provided. Prompting for input.")
@@ -70,11 +85,11 @@ def api_config_prompt(tenant_url: str | None, api_token: str | None, interactive
         api_token = typer.prompt("Enter API Token", hide_input=True)
 
     if tenant_url is None:
-        msg = "You must provide a valid Kandji Tenant API URL. Use the --tenant-url flag or the set the KST_TENANT environment variable."
+        msg = "You must provide a valid Kandji Tenant API URL. Use the --tenant-url flag or set the KST_TENANT environment variable, or use the tenant manager."
         console.error(msg)
         raise typer.BadParameter(msg)
     if api_token is None:
-        msg = "You must provide a valid Kandji API Token. Use the --api-token flag or the set the KST_TOKEN environment variable."
+        msg = "You must provide a valid Kandji API Token. Use the --api-token flag or set the KST_TOKEN environment variable, or use the tenant manager."
         console.error(msg)
         raise typer.BadParameter(msg)
 
