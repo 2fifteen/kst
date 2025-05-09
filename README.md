@@ -1,3 +1,8 @@
+# 2Fifteen Fork
+
+This is Kandji's Sync Toolkit, but we will be working on adding some logic to handle multi-tenancy better for our specific use-case.
+
+
 # Kandji Sync Toolkit
 
 `kst` (*pronounced kast*) is a utility for managing resources via the Kandji API.
